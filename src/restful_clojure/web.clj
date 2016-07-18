@@ -15,8 +15,9 @@
 
 (def responseString "Hello World2")
              
-(defn userIdHandler [req]
-    (let [userId (get-in req [:body :userIdExternal])]
+(defn get-add-user [req]
+    (let [body (:body req)
+          userId (:userIdExternal body)]
     (prn userId)
     (response {:userId userId}))
     )
@@ -31,7 +32,7 @@
   (POST "/" {body :body} (slurp body))
   (GET "/count-up/:to" [to] (str-to (Integer. to)))
   (GET "/count-down/:from" [from] (str-from (Integer. from)))
-  (POST "/get_add_user" req ((composer userIdHandler) req)))
+  (POST "/get-add-user" req ((composer get-add-user) req)))
 
 (defn -main []
   (run-jetty #'routes {:port 8080 :join? false}))
