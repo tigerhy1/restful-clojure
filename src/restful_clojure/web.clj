@@ -1,7 +1,7 @@
 (ns restful_clojure.web
   (:require [compojure.core :refer [defroutes GET POST]]
             [ring.adapter.jetty :refer [run-jetty]]
-            [ring.middleware.json :as middleware]
+            [ring.middleware.json :refer [wrap-json-body, wrap-json-response]]
             [ring.util.response :refer [response]])
   (:import [com.couchbase.client.java Cluster CouchbaseCluster]))
 
@@ -21,17 +21,17 @@
     (response {:userId userId}))
     )
 
-(def exHandler 
-    (middleware/wrap-json-body userIdHandler {:keywords? true}))
-
-(def finalHandler
-    (middleware/wrap-json-response exHandler))
+(defn composer
+    [handler]
+    (-> handler
+        (wrap-json-body {:keywords? true :bigdecimals? true})
+        wrap-json-response))
 
 (defroutes routes
   (POST "/" {body :body} (slurp body))
   (GET "/count-up/:to" [to] (str-to (Integer. to)))
   (GET "/count-down/:from" [from] (str-from (Integer. from)))
-  (POST "/get_add_user" req (finalHandler req)))
+  (POST "/get_add_user" req ((composer userIdHandler) req)))
 
 (defn -main []
   (run-jetty #'routes {:port 8080 :join? false}))
