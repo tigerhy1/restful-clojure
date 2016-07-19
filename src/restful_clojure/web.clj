@@ -2,7 +2,10 @@
   (:require [compojure.core :refer [defroutes GET POST]]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.json :refer [wrap-json-body, wrap-json-response]]
-            [ring.util.response :refer [response]])
+            [ring.util.response :refer [response]]
+            [restful_clojure.couchbase_con :refer [bucket]]
+            [restful_clojure.couchbase :as c])
+            
   (:import [com.couchbase.client.java Cluster CouchbaseCluster]))
 
 (defn- str-to [num]
@@ -14,12 +17,20 @@
 ;Cluster cluster = CouchbaseCluster.create();
 
 (def responseString "Hello World2")
+
+
+(def test-cb 
+    (c/get-doc bucket "hello"))
+    ;(prn "test-cb"))
              
 (defn get-add-user [req]
     (let [body (:body req)
-          userId (:userIdExternal body)]
-    (prn userId)
-    (response {:userId userId}))
+          openId (:openId body)
+          unionId (:unionId body)
+          weixinName (:weixinName body)]
+    (prn test-cb)
+    (prn openId)
+    (response {:openId openId}))
     )
 
 (defn composer

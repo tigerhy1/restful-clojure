@@ -58,9 +58,9 @@
           doc (create-json-document id json)]
         (document->map (.upsert bucket doc))))
 
-(defn get
+(defn get-doc
     ([bucket id]
-     (get bucket id :json))
+     (get-doc bucket id :json))
     ([bucket id format]
      (let [doc (.get bucket id)]
          (if doc
