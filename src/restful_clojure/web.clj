@@ -31,26 +31,41 @@
       (if (nil? content) 0 (:uid content))
     ))
 
+(defn create-user
+    [openId unionId weixinName]
+    (let [k "max_uid"
+          uid (c/counter! bucket k)]
+        (prn k)
+        (prn uid)
+          {:uid uid
+          :openId openId
+          :unionId unionId
+          :weixinName weixinName
+          }
+        ))
+
+
 (defn add-user
-    []
-    2)
+    [openId unionId weixinName]
+    (let [user (create-user openId unionId weixinName)
+          k (str "user_" (:uid user))]
+        (c/replace! bucket k user)))
 
 (defn get-add-user-db 
-    [openId]
-    (let [uid (get-uid openId)]
+    [openId unionId weixinName]
+    (let [uid (get-uid unionId)]
     ;(prn "in get-add-user-db")
     ;add-user add () around, then mean apply the function, 
     ;otherwise just function object.
-    (cond (= 0 uid) (add-user)
+    (cond (= 0 uid) (add-user openId unionId weixinName)
           :else uid)))
-
 
 (defn get-add-user [req]
     (let [body (:body req)
           openId (:openId body)
           unionId (:unionId body)
           weixinName (:weixinName body)
-          uid (get-add-user-db openId)]
+          uid (get-add-user-db openId unionId weixinName)]
     ;(prn (get-add-user-db openId unionId weixinName))
     (prn openId)
     (response {:openId uid}))
