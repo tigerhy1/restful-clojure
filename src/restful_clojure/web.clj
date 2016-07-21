@@ -44,11 +44,13 @@
           }
         ))
 
-
 (defn add-user
     [openId unionId weixinName]
     (let [user (create-user openId unionId weixinName)
-          k (str "user_" (:uid user))]
+          uid (:uid user)
+          k (str "user_" uid)
+          k2 (str "unionid2uid_" unionId)]
+        (c/replace! bucket k2 {:uid uid})
         (c/replace! bucket k user)))
 
 (defn get-add-user-db 

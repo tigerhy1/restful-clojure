@@ -22,7 +22,7 @@
 
 (defn counter!
     ([bucket k]
-     (counter! bucket k 0 1))
+     (counter! bucket k 1 1))
     ([bucket k delta initial]
      (get-cnt (.counter bucket k delta initial))))
 
