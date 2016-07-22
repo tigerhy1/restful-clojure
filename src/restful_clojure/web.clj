@@ -4,7 +4,9 @@
             [ring.middleware.json :refer [wrap-json-body, wrap-json-response]]
             [ring.util.response :refer [response]]
             [restful_clojure.couchbase_con :refer [bucket]]
-            [restful_clojure.couchbase :as c])
+            [restful_clojure.couchbase :as c]
+            [restful_clojure.movie :as m]
+            [restful_clojure.share :as s])
             
   (:import [com.couchbase.client.java Cluster CouchbaseCluster]))
 
@@ -27,7 +29,7 @@
     [unionId]
     (let [k (str "unionid2uid" "_" unionId)
           content (c/get-doc bucket k)]
-      (prn content)
+      (prn (str "in get-uid " content))
       (if (nil? content) 0 (:uid content))
     ))
 
@@ -70,8 +72,16 @@
           uid (get-add-user-db openId unionId weixinName)]
     ;(prn (get-add-user-db openId unionId weixinName))
     (prn openId)
-    (response {:openId uid}))
+    (response {:uid uid}))
     )
+
+(defn add-share [req]
+    (let [body (:body req)
+          uid (:uid body)
+          movieName (:movieName body)
+          desc (:desc body)
+          mid (m/get-add-movie movieName)]
+        (s/add-share uid mid desc)))
 
 (defn composer
     [handler]
@@ -83,7 +93,9 @@
   (POST "/" {body :body} (slurp body))
   (GET "/count-up/:to" [to] (str-to (Integer. to)))
   (GET "/count-down/:from" [from] (str-from (Integer. from)))
-  (POST "/get-add-user" req ((composer get-add-user) req)))
+  (POST "/get-add-user" req ((composer get-add-user) req))
+  (POST "/add-share" req ((composer add-share) req)))
 
 (defn -main []
   (run-jetty #'routes {:port 8080 :join? false}))
+
