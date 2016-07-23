@@ -87,5 +87,12 @@ share的添加要从share的外部来进行，share保持不和movie耦合。
 
 发现一个小bug, jsonDoc里的content没有弄成map
 
+2016-07-23
+
+还是以乐趣为主
+
+昨天那个小bug在movie里面已经改了，现在get-uid里改.
+
+
 
 

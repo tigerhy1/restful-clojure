@@ -28,9 +28,10 @@
 (defn get-uid
     [unionId]
     (let [k (str "unionid2uid" "_" unionId)
-          content (c/get-doc bucket k)]
+          doc (c/get-doc bucket k)
+          content (:content doc)]
       (prn (str "in get-uid " content))
-      (if (nil? content) 0 (:uid content))
+      (if (nil? content) 0 (get content "uid"))
     ))
 
 (defn create-user
