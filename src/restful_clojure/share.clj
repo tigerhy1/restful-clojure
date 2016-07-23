@@ -14,3 +14,25 @@
     (let [shareId (c/counter! bucket "max_sid")
           k (str "share_" shareId)]
         (c/replace! bucket k (create-share uid mid desc))))
+
+(defn get-test
+    [x]
+    x)
+
+;TODO aynchroized API
+(defn get-share
+    ([shareId]
+    (let [k (str "share_" shareId)
+          doc (c/get-doc bucket k)
+          content (:content doc)]
+        (prn "k " k " content " content)
+        content))
+    ([offset size]
+    (let [lastIdx (c/counter bucket "max_sid")
+          sIdx (- lastIdx offset)
+          eIdx (max 0 (- sIdx size))
+          r (range sIdx eIdx -1)]
+        (prn (str "sIdx " sIdx " eIdx " eIdx))
+        (prn (str "offset " offset " size " size))
+        (prn r)
+        (map get-share r))))

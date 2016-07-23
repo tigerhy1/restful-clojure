@@ -26,6 +26,11 @@
     ([bucket k delta initial]
      (get-cnt (.counter bucket k delta initial))))
 
+
+(defn counter
+    [bucket k]
+    (counter! bucket k 0 0))
+
 (defn read-json
     [data]
     (when-not (nil? data) (json/read-str data)))

@@ -93,6 +93,9 @@ share的添加要从share的外部来进行，share保持不和movie耦合。
 
 昨天那个小bug在movie里面已经改了，现在get-uid里改.
 
+其实对于clojure的map,还有一个小小的疑问:什么时候可以(:key m) 什么时候可以 (get m key)
 
+再实现一个get-share就有基本功能，可以和前端联调起来了。
 
+还要考虑一下并行的问题,map coll fun，是并行的吗?怎么弄成并行的
 
