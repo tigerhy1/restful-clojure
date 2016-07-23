@@ -1,0 +1,91 @@
+2016-07-14
+
+clojure已经能对couchbase正常读写了。
+
+下面需要做的是设计数据结构.
+
+第一步，四个表：
+
+1. user:(先只有微信用户登录) 
+
+key: user_{$userId}
+
+userId, name, openId, unionId
+
+2. share:
+
+key: share_{$shareId}
+
+shareId, userId, movieId, description, like_cnt
+
+3. comment:
+
+key: comment_{$commentId}
+
+commentId, shareId, userId, toCommentId, comment
+
+4. movie:
+
+key: movie_{$movieId}
+
+movieId, name.
+
+
+接口:
+
+get_add_user
+add_share
+delete_share
+add_comment
+delete_comment
+get_shares
+get_shares_by_movie
+get_shares_by_user
+get_comments
+
+先想想怎么做登录
+
+如果要测试号的话，还得另弄一个微信了。
+
+2016-07-18
+
+先暂时把微信登陆给放一放。先做其他逻辑
+
+2016-07-19
+
+今天考虑把从接到请求到写入数据库，这一整条链条打通。
+
+想了下程序结构的问题，最开始还是准备把所有东西放到一起。这样好维护些.
+
+但是写程序，可以先不考虑登陆认证的事情。
+
+2016-07-20
+
+链条倒是打通了，把get-add-user这个逻辑给打通.
+
+先不要想微信登陆的事情。先手动能测就行。
+
+2016-07-21
+
+还是先不管微信登陆的事情，但是得开始考虑和前端怎么联合起来。
+
+突然想到这不就是Test Driven Developement
+
+下一个功能开发add_share
+
+movie的存储方法和user保持了一致。
+
+share的添加要从share的外部来进行，share保持不和movie耦合。
+
+1234567890123
+
+2016-07-22
+
+今天看有没有办法把add_share功能给弄好。
+
+跑通了，但是还有小问题需要改下.
+
+发现一个小bug, jsonDoc里的content没有弄成map
+
+
+
