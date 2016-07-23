@@ -97,5 +97,14 @@ share的添加要从share的外部来进行，share保持不和movie耦合。
 
 再实现一个get-share就有基本功能，可以和前端联调起来了。
 
-还要考虑一下并行的问题,map coll fun，是并行的吗?怎么弄成并行的
+还要考虑一下并行的问题,map coll fun，是并行的吗?怎么弄成并行的.
+
+
+
+现在到了可以联调的状态了，想了下，有两个事情可以做:
+
+1. map fun r， 这个怎么放到一个list里去(原来用那儿json库，还要加一个response才行呢)
+
+2. add-user, get-user这个逻辑放到单独一个文件里去
+
 

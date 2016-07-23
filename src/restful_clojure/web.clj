@@ -88,7 +88,7 @@
     (let [body (:body req)
           offset (:offset body)
           size (:size body)]
-        (s/get-share offset size)))
+        (response(s/get-share offset size))))
 
 (defn composer
     [handler]
@@ -96,13 +96,22 @@
         (wrap-json-body {:keywords? true :bigdecimals? true})
         wrap-json-response))
 
+(defn get-test
+    [req]
+    (let [a {:uid 1 :name "hu"}
+          b {:uid 2 :name "yuan"}
+          l (list a b)]
+        (response l))
+    )
+
 (defroutes routes
   (POST "/" {body :body} (slurp body))
   (GET "/count-up/:to" [to] (str-to (Integer. to)))
   (GET "/count-down/:from" [from] (str-from (Integer. from)))
   (POST "/get-add-user" req ((composer get-add-user) req))
   (POST "/add-share" req ((composer add-share) req))
-  (POST "/get-share" req ((composer get-share) req)))
+  (POST "/get-share" req ((composer get-share) req))
+  (POST "/get-test" req ((composer get-test) req)))
   
 
 (defn -main []
