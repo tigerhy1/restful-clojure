@@ -8,6 +8,7 @@
                  [ring/ring-core "1.5.0"]
                  [ring/ring-jetty-adapter "1.5.0"]
                  [ring/ring-json "0.4.0"]
+                 [ring-cors "0.1.8"]
                  [compojure "1.5.1"]
                  [com.couchbase.client/java-client "2.2.4"]]
   :main restful_clojure.web

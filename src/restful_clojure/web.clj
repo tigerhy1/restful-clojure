@@ -1,7 +1,8 @@
 (ns restful_clojure.web
-  (:require [compojure.core :refer [defroutes GET POST]]
+  (:require [compojure.core :refer [defroutes GET POST OPTIONS]]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.json :refer [wrap-json-body, wrap-json-response]]
+            [ring.middleware.cors :refer [wrap-cors]]
             [ring.util.response :refer [response]]
             [restful_clojure.couchbase_con :refer [bucket]]
             [restful_clojure.couchbase :as c]
@@ -76,6 +77,12 @@
     (response {:uid uid}))
     )
 
+(defn get-user-name [uid]
+    (let [k (str "user_" uid)
+          doc (c/get-doc bucket k)
+          user (:content doc)]
+        (get user "weixinName")))
+
 (defn add-share [req]
     (let [body (:body req)
           uid (:uid body)
@@ -84,11 +91,41 @@
           mid (m/get-add-movie movieName)]
         (s/add-share uid mid desc)))
 
+(defn fill-content 
+    [item]
+    (let [sid (get item "sid")
+          uid (get item "uid")
+          mid (get item "mid")
+          desc (get item "desc")
+          user_name (get-user-name uid)
+          movie_name (m/get-movie-name mid)]
+        {:id sid
+         :user_name user_name
+         :movie_name movie_name
+         :share_comment desc}))
+
+(defn get-share-test [req]
+    (let [body (:body req)]
+        (prn "body" body)
+        {:status 200
+        :headers {"Content-Type" "text/html" "Access-Control-Allow-Origin" "http://localhost:3000"
+             "Access-Control-Allow-Methods" "GET,PUT,POST,DELETE,OPTIONS"}
+        :body "Hello"}))
+
 (defn get-share [req]
     (let [body (:body req)
           offset (:offset body)
-          size (:size body)]
-        (response(s/get-share offset size))))
+          size (:size body)
+          raw (s/get-share offset size)
+          res (response (map fill-content raw))
+          result (-> res
+                     (assoc-in [:headers "Access-Control-Allow-Origin"] "http://localhost:3000")
+                     (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,DELETE,OPTIONS"))]
+                        
+        
+        (prn "res    = " res) 
+        (prn "reslut = " result)
+        result))
 
 (defn composer
     [handler]
@@ -101,8 +138,17 @@
     (let [a {:uid 1 :name "hu"}
           b {:uid 2 :name "yuan"}
           l (list a b)]
+        (prn l)
         (response l))
     )
+
+(defn options-handler [request]
+  (prn "ooo")
+  {:status 200
+   :headers {"Content-Type" "application/json" "Access-Control-Allow-Origin" "http://localhost:3000"
+             "Access-Control-Allow-Methods" "GET,PUT,POST,DELETE,OPTIONS"
+             "Access-Control-Allow-Headers" "Origin, X-Requested-With, Content-Type, Accept"}
+   :body "hi"})
 
 (defroutes routes
   (POST "/" {body :body} (slurp body))
@@ -111,7 +157,8 @@
   (POST "/get-add-user" req ((composer get-add-user) req))
   (POST "/add-share" req ((composer add-share) req))
   (POST "/get-share" req ((composer get-share) req))
-  (POST "/get-test" req ((composer get-test) req)))
+  (POST "/get-test" req ((composer get-share) req))
+  (OPTIONS "/get-test" req (options-handler req)))
   
 
 (defn -main []

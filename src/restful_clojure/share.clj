@@ -24,9 +24,10 @@
     ([shareId]
     (let [k (str "share_" shareId)
           doc (c/get-doc bucket k)
-          content (:content doc)]
-        (prn "k " k " content " content)
-        content))
+          content (:content doc)
+          ret (assoc content "sid" shareId)]
+        (prn "k " k " content " ret)
+        ret))
     ([offset size]
     (let [lastIdx (c/counter bucket "max_sid")
           sIdx (- lastIdx offset)

@@ -41,3 +41,18 @@
         (cond
             (= 0 mid) (add-movie name)
             :else mid)))
+
+;From mid to movie_name
+(defn get-movie-name [mid]
+    (let [k (str "m_" mid)
+          doc (c/get-doc bucket k)
+          movie (:content doc)]
+        ;(prn "doc " doc)
+        ;(prn "movie " movie)
+        (get movie "name")))
+    
+
+
+
+
+
