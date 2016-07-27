@@ -2,7 +2,7 @@
   (:require [compojure.core :refer [defroutes GET POST OPTIONS]]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.json :refer [wrap-json-body, wrap-json-response]]
-            [ring.middleware.cors :refer [wrap-cors]]
+            ;[ring.middleware.cors :refer [wrap-cors]]
             [ring.util.response :refer [response]]
             [restful_clojure.couchbase_con :refer [bucket]]
             [restful_clojure.couchbase :as c]
@@ -83,13 +83,20 @@
           user (:content doc)]
         (get user "weixinName")))
 
+(defn wrap-cors [res]
+    (-> res
+        (assoc-in [:headers "Access-Control-Allow-Origin"] "http://localhost:3000")
+        (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,DELETE,OPTIONS")))
+
 (defn add-share [req]
     (let [body (:body req)
           uid (:uid body)
-          movieName (:movieName body)
-          desc (:desc body)
-          mid (m/get-add-movie movieName)]
-        (s/add-share uid mid desc)))
+          movieName (:movie_name body)
+          desc (:share_comment body)
+          mid (m/get-add-movie movieName)
+          res (s/add-share uid mid desc)]
+        (prn "uid " uid " movie_name " movieName "share_comment" desc)
+        (wrap-cors res)))
 
 (defn fill-content 
     [item]
@@ -111,6 +118,8 @@
         :headers {"Content-Type" "text/html" "Access-Control-Allow-Origin" "http://localhost:3000"
              "Access-Control-Allow-Methods" "GET,PUT,POST,DELETE,OPTIONS"}
         :body "Hello"}))
+
+
 
 (defn get-share [req]
     (let [body (:body req)
@@ -156,6 +165,7 @@
   (GET "/count-down/:from" [from] (str-from (Integer. from)))
   (POST "/get-add-user" req ((composer get-add-user) req))
   (POST "/add-share" req ((composer add-share) req))
+  (OPTIONS "/add-share" req (options-handler req))
   (POST "/get-share" req ((composer get-share) req))
   (POST "/get-test" req ((composer get-share) req))
   (OPTIONS "/get-test" req (options-handler req)))
