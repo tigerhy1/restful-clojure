@@ -9,16 +9,6 @@
      :mid mid
      :desc desc})
 
-(defn add-share
-    [uid, mid, desc]
-    (let [shareId (c/counter! bucket "max_sid")
-          k (str "share_" shareId)]
-        (c/replace! bucket k (create-share uid mid desc))))
-
-(defn get-test
-    [x]
-    x)
-
 ;TODO aynchroized API
 (defn get-share
     ([shareId]
@@ -37,3 +27,15 @@
         (prn (str "offset " offset " size " size))
         (prn r)
         (map get-share r))))
+
+(defn add-share
+    [uid, mid, desc]
+    (let [shareId (c/counter! bucket "max_sid")
+          k (str "share_" shareId)]
+        (c/replace! bucket k (create-share uid mid desc))
+        (get-share shareId)))
+
+(defn get-test
+    [x]
+    x)
+

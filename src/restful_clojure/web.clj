@@ -88,15 +88,7 @@
         (assoc-in [:headers "Access-Control-Allow-Origin"] "http://localhost:3000")
         (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,DELETE,OPTIONS")))
 
-(defn add-share [req]
-    (let [body (:body req)
-          uid (:uid body)
-          movieName (:movie_name body)
-          desc (:share_comment body)
-          mid (m/get-add-movie movieName)
-          res (s/add-share uid mid desc)]
-        (prn "uid " uid " movie_name " movieName "share_comment" desc)
-        (wrap-cors res)))
+
 
 (defn fill-content 
     [item]
@@ -119,6 +111,19 @@
              "Access-Control-Allow-Methods" "GET,PUT,POST,DELETE,OPTIONS"}
         :body "Hello"}))
 
+(defn add-share [req]
+    (let [body (:body req)
+          uid (:uid body)
+          movieName (:movie_name body)
+          desc (:share_comment body)
+          mid (m/get-add-movie movieName)
+          res (s/add-share uid mid desc)
+          result (fill-content res)]
+        (prn "uid " uid " movie_name " movieName "share_comment" desc)
+        (prn "add-share result "  result)
+        (-> result
+            response
+            wrap-cors)))
 
 
 (defn get-share [req]
