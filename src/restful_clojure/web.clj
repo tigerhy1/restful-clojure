@@ -3,7 +3,10 @@
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.json :refer [wrap-json-body, wrap-json-response]]
             ;[ring.middleware.cors :refer [wrap-cors]]
+            [ring.middleware.defaults :refer :all]
             [ring.util.response :refer [response]]
+            [clojure.string :refer [join]]
+            [pandect.algo.sha1 :refer :all]
             [restful_clojure.couchbase_con :refer [bucket]]
             [restful_clojure.couchbase :as c]
             [restful_clojure.movie :as m]
@@ -164,6 +167,21 @@
              "Access-Control-Allow-Headers" "Origin, X-Requested-With, Content-Type, Accept"}
    :body "hi"})
 
+(defn check-echo [request]
+    (prn request)
+    (prn (:params request))
+    (let [params (:params request)
+          signature (get params :signature)
+          timestamp (:timestamp params)
+          nonce (:nonce params)
+          arr (sort [signature timestamp nonce])
+          s (sha1 (join arr))]
+        (cond (= s signature) (response signature)
+            :else (response ""))))
+
+(def check-echo-handler
+    (wrap-defaults check-echo api-defaults))
+
 (defroutes routes
   (POST "/" {body :body} (slurp body))
   (GET "/count-up/:to" [to] (str-to (Integer. to)))
@@ -173,7 +191,10 @@
   (OPTIONS "/add-share" req (options-handler req))
   (POST "/get-share" req ((composer get-share) req))
   (POST "/get-test" req ((composer get-share) req))
-  (OPTIONS "/get-test" req (options-handler req)))
+  (OPTIONS "/get-test" req (options-handler req))
+  (GET "/check-echo" req (check-echo-handler req))
+  (GET "/foo/:foo" [foo id]                    ; You can always destructure and use query parameter in the same way
+    (str "Foo = " foo " / Id = " id)))
   
 
 (defn -main []

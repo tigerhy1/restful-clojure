@@ -134,4 +134,10 @@ CORS算是搞清楚了，进了一大步。
 
 还有add-share接口.
 
+2016-08-01
+
+compojure get 拿到params搞定了，原来是要用ring-defaults中间件.
+
+check-echo的功能实现好了,现在要做的是部署在那个阿里云机器上.
+
 
