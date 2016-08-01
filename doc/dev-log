@@ -140,4 +140,11 @@ compojure get 拿到params搞定了，原来是要用ring-defaults中间件.
 
 check-echo的功能实现好了,现在要做的是部署在那个阿里云机器上.
 
+部署到虚拟机上遇到两个打包的问题: 1. lein uberjar: 主class的namespace要有:gen-class
+                             2. 要用带standalone的jar包.
+                             
+下一步要在上面装couchbase
+
+couchbase已经装好，下次来可以直接开始测微信登陆了。
+
 

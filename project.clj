@@ -14,4 +14,5 @@
                  [compojure "1.5.1"]
                  [com.couchbase.client/java-client "2.2.4"]]
   :main restful_clojure.web
+  :aot [restful_clojure.web]
   )

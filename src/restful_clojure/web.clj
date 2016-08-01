@@ -1,4 +1,5 @@
 (ns restful_clojure.web
+  (:gen-class)
   (:require [compojure.core :refer [defroutes GET POST OPTIONS]]
             [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.json :refer [wrap-json-body, wrap-json-response]]
