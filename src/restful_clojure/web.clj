@@ -175,9 +175,11 @@
           signature (get params :signature)
           timestamp (:timestamp params)
           nonce (:nonce params)
-          arr (sort [signature timestamp nonce])
+          echostr (:echostr params)
+          token "123456789"
+          arr (sort [token timestamp nonce])
           s (sha1 (join arr))]
-        (cond (= s signature) (response signature)
+        (cond (= s signature) (response echostr)
             :else (response ""))))
 
 (def check-echo-handler
@@ -199,5 +201,5 @@
   
 
 (defn -main []
-  (run-jetty #'routes {:port 8080 :join? false}))
+  (run-jetty #'routes {:port 80 :join? false}))
 
