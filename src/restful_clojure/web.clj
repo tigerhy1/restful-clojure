@@ -5,9 +5,11 @@
             [ring.middleware.json :refer [wrap-json-body, wrap-json-response]]
             ;[ring.middleware.cors :refer [wrap-cors]]
             [ring.middleware.defaults :refer :all]
+            [ring.middleware.session :refer [wrap-session]]
             [ring.util.response :refer [response]]
             [clojure.string :refer [join]]
             [pandect.algo.sha1 :refer :all]
+            [clj-http.client :as client]
             [restful_clojure.couchbase_con :refer [bucket]]
             [restful_clojure.couchbase :as c]
             [restful_clojure.movie :as m]
@@ -89,7 +91,7 @@
 
 (defn wrap-cors [res]
     (-> res
-        (assoc-in [:headers "Access-Control-Allow-Origin"] "http://localhost:3000")
+        (assoc-in [:headers "Access-Control-Allow-Origin"] "*")
         (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,DELETE,OPTIONS")))
 
 
@@ -111,7 +113,7 @@
     (let [body (:body req)]
         (prn "body" body)
         {:status 200
-        :headers {"Content-Type" "text/html" "Access-Control-Allow-Origin" "http://localhost:3000"
+        :headers {"Content-Type" "text/html" "Access-Control-Allow-Origin" "*"
              "Access-Control-Allow-Methods" "GET,PUT,POST,DELETE,OPTIONS"}
         :body "Hello"}))
 
@@ -137,7 +139,7 @@
           raw (s/get-share offset size)
           res (response (map fill-content raw))
           result (-> res
-                     (assoc-in [:headers "Access-Control-Allow-Origin"] "http://localhost:3000")
+                     (assoc-in [:headers "Access-Control-Allow-Origin"] "*")
                      (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,DELETE,OPTIONS"))]
                         
         
@@ -163,7 +165,7 @@
 (defn options-handler [request]
   (prn "ooo")
   {:status 200
-   :headers {"Content-Type" "application/json" "Access-Control-Allow-Origin" "http://localhost:3000"
+   :headers {"Content-Type" "application/json" "Access-Control-Allow-Origin" "*"
              "Access-Control-Allow-Methods" "GET,PUT,POST,DELETE,OPTIONS"
              "Access-Control-Allow-Headers" "Origin, X-Requested-With, Content-Type, Accept"}
    :body "hi"})
@@ -185,6 +187,47 @@
 (def check-echo-handler
     (wrap-defaults check-echo api-defaults))
 
+(defn deal-code [code]
+    (let [appid "wx05c3938f1f56e04b"
+          secret "5f31e0bf0384fc0471d01b594c33165a"
+          grant_type "authorization_code"
+          res (client/get "https://api.weixin.qq.com/sns/oauth2/access_token?"
+                    {:query-params {:appid appid :secret secret :code code :grant_type grant_type}})]
+        (prn res)
+        nil)
+    )
+
+;(defn receive-code-test [request]
+;    (response "yes"))
+
+(defn receive-code [request]
+    (let [params (:params request)
+         code (:code params)]
+        (prn "print sth")
+        (prn params)
+        (cond (= nil code) nil
+            :else (deal-code code)))
+    )
+
+(def receive-code-handler
+    (-> receive-code
+        wrap-session
+        (wrap-defaults api-defaults)))
+
+;prove that session can work
+(defn set-session [{session :session}]
+    (let [count (:count session 0)
+          session (assoc session :count (inc count))]
+          (prn session)
+          (-> (response (str "You accessed this page " count " times."))
+              (assoc :session session)))
+    )
+
+(def set-session-handler
+    (-> set-session
+        wrap-session
+        (wrap-defaults api-defaults)))
+
 (defroutes routes
   (POST "/" {body :body} (slurp body))
   (GET "/count-up/:to" [to] (str-to (Integer. to)))
@@ -197,9 +240,11 @@
   (OPTIONS "/get-test" req (options-handler req))
   (GET "/check-echo" req (check-echo-handler req))
   (GET "/foo/:foo" [foo id]                    ; You can always destructure and use query parameter in the same way
-    (str "Foo = " foo " / Id = " id)))
+    (str "Foo = " foo " / Id = " id))
+  (GET "/receive-code" req (receive-code-handler req))
+  (GET "/set-session" req (set-session-handler req)))
   
 
 (defn -main []
-  (run-jetty #'routes {:port 80 :join? false}))
+  (run-jetty #'routes {:port 8080 :join? false}))
 
