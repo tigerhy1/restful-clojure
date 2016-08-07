@@ -249,8 +249,7 @@
 
 (def get-share-handler
     (-> get-share
-        wrap-session
-        (wrap-defaults api-defaults)))
+        wrap-session))
 
 (defroutes routes
   (POST "/" {body :body} (slurp body))
