@@ -173,6 +173,6 @@ session是Ok的。
 
 我觉得直接不变架构，也是可以的，因为只有访问restful_clojure的时候会用cookie.来验证一下.
 
-
+先把session里username给set出来,然后在redirect到3000端口（主页）,add-share的时候prn username看能不能出来.
 
 

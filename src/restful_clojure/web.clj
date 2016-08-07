@@ -6,7 +6,7 @@
             ;[ring.middleware.cors :refer [wrap-cors]]
             [ring.middleware.defaults :refer :all]
             [ring.middleware.session :refer [wrap-session]]
-            [ring.util.response :refer [response]]
+            [ring.util.response :refer [response, redirect]]
             [clojure.string :refer [join]]
             [clojure.data.json :as json]
             [pandect.algo.sha1 :refer :all]
@@ -196,19 +196,25 @@
                     {:query-params {:appid appid :secret secret :code code :grant_type grant_type}})
           body (:body res)
           json-body (json/read-str body)
-          access_token (:access_token json-body)
-          openid (:openid json-body)
+          access_token (get json-body "access_token")
+          openid (get json-body "openid")
           res1 (client/get "https://api.weixin.qq.com/sns/userinfo?"
                     {:query-params {:access_token access_token :openid openid :lang "zh_CN"}})
-          body1 (:body res1)]
-        (prn res)
-        (prn (str "access_token " access_token))
-        (prn body1)
-        nil)
+          body1 (:body res1)
+          json-body1 (json/read-str body1)
+          nickname (get json-body1 "nickname")]
+        (prn nickname)
+        nickname)
     )
 
 ;(defn receive-code-test [request]
 ;    (response "yes"))
+
+(defn deal-code-session [request code]
+    (let [session (:session request)
+          nickname (deal-code code)
+          session (assoc session :useranme nickname)]
+        session))
 
 (defn receive-code [request]
     (let [params (:params request)
@@ -216,7 +222,8 @@
         (prn "print sth")
         (prn params)
         (cond (= nil code) nil
-            :else (deal-code code)))
+            :else (->(redirect "http://114.215.112.211:3000")
+                     (assoc :session (deal-code-session request code)))))
     )
 
 (def receive-code-handler
