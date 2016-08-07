@@ -165,6 +165,13 @@ couchbase已经装好，下次来可以直接开始测微信登陆了。
 
 session是Ok的。
 
+下一步就是搞明白cookie和session的原理。然后看这个架构需不需要重来: index.html放到jetty下
+
+我想了下还是把index.html部署到clojure这个项目里面，以后维护也好维护一些，只用维护一个服务就可以了.
+
+2016-08-07
+
+我觉得直接不变架构，也是可以的，因为只有访问restful_clojure的时候会用cookie.来验证一下.
 
 
 

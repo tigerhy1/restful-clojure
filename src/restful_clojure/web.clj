@@ -8,6 +8,7 @@
             [ring.middleware.session :refer [wrap-session]]
             [ring.util.response :refer [response]]
             [clojure.string :refer [join]]
+            [clojure.data.json :as json]
             [pandect.algo.sha1 :refer :all]
             [clj-http.client :as client]
             [restful_clojure.couchbase_con :refer [bucket]]
@@ -192,8 +193,17 @@
           secret "5f31e0bf0384fc0471d01b594c33165a"
           grant_type "authorization_code"
           res (client/get "https://api.weixin.qq.com/sns/oauth2/access_token?"
-                    {:query-params {:appid appid :secret secret :code code :grant_type grant_type}})]
+                    {:query-params {:appid appid :secret secret :code code :grant_type grant_type}})
+          body (:body res)
+          json-body (json/read-str body)
+          access_token (:access_token json-body)
+          openid (:openid json-body)
+          res1 (client/get "https://api.weixin.qq.com/sns/userinfo?"
+                    {:query-params {:access_token access_token :openid openid :lang "zh_CN"}})
+          body1 (:body res1)]
         (prn res)
+        (prn (str "access_token " access_token))
+        (prn body1)
         nil)
     )
 
