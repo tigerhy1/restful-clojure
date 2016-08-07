@@ -141,9 +141,11 @@
           res (response (map fill-content raw))
           result (-> res
                      (assoc-in [:headers "Access-Control-Allow-Origin"] "*")
-                     (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,DELETE,OPTIONS"))]
+                     (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,DELETE,OPTIONS"))
+          session (:session req)]
                         
-        
+        (prn session)
+        (prn "session username  = "  (:username session))
         (prn "res    = " res) 
         (prn "reslut = " result)
         result))
@@ -245,6 +247,11 @@
         wrap-session
         (wrap-defaults api-defaults)))
 
+(def get-share-handler
+    (-> get-share
+        wrap-session
+        (wrap-defaults api-defaults)))
+
 (defroutes routes
   (POST "/" {body :body} (slurp body))
   (GET "/count-up/:to" [to] (str-to (Integer. to)))
@@ -252,8 +259,8 @@
   (POST "/get-add-user" req ((composer get-add-user) req))
   (POST "/add-share" req ((composer add-share) req))
   (OPTIONS "/add-share" req (options-handler req))
-  (POST "/get-share" req ((composer get-share) req))
-  (POST "/get-test" req ((composer get-share) req))
+  (POST "/get-share" req ((composer get-share-handler) req))
+  (POST "/get-test" req ((composer get-share-handler) req))
   (OPTIONS "/get-test" req (options-handler req))
   (GET "/check-echo" req (check-echo-handler req))
   (GET "/foo/:foo" [foo id]                    ; You can always destructure and use query parameter in the same way
