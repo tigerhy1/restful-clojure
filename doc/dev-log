@@ -175,4 +175,11 @@ session是Ok的。
 
 先把session里username给set出来,然后在redirect到3000端口（主页）,add-share的时候prn username看能不能出来.
 
+2016-08-08
+
+今天第一步是试一试set-session在微信内是否能保持session.
+
+
+
+
 

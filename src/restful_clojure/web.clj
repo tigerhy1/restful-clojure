@@ -234,18 +234,19 @@
         (wrap-defaults api-defaults)))
 
 ;prove that session can work
-(defn set-session [{session :session}]
-    (let [count (:count session 0)
-          session (assoc session :count (inc count))]
+(defn set-session [req]
+    (let [session1 (:session req)
+          count (:count session1 0)
+          session (assoc session1 :count (inc count))]
           (prn session)
           (-> (response (str "You accessed this page " count " times."))
-              (assoc :session session)))
+              (assoc :session session)
+              (assoc :headers {"Content-Type" "text/html"})))
     )
 
 (def set-session-handler
     (-> set-session
-        wrap-session
-        (wrap-defaults api-defaults)))
+        wrap-session))
 
 (def get-share-handler
     (-> get-share
