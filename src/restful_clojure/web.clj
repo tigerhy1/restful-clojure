@@ -225,7 +225,8 @@
         (prn params)
         (cond (= nil code) nil
             :else (->(redirect "http://114.215.112.211:3000")
-                     (assoc :session (deal-code-session request code)))))
+                     (assoc :session (deal-code-session request code))
+                     (assoc-in [:headers "Access-Control-Allow-Credentials"] "true"))))
     )
 
 (def receive-code-handler

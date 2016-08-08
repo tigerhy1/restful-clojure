@@ -179,7 +179,13 @@ session是Ok的。
 
 今天第一步是试一试set-session在微信内是否能保持session.
 
+实验证明在微信里的session是能保持的.
 
+昨天还想到一个调试的办法就是用代理charlies调试工具，可以查看session什么的。
+
+还有个可能性: elm那边在做http.send的时候, 没有带上session.
+
+知道问题的点在哪里了，还是跨域的问题.
 
 
 
