@@ -187,5 +187,47 @@ session是Ok的。
 
 知道问题的点在哪里了，还是跨域的问题.
 
+2016-08-09
 
+还是得用charlies,不过这个值得花时间。
 
+charlies先用office-5g不行，还是用rd的无线网才行.这是什么原理?
+
+在家用局域网的话,是直接可以用呢,还是需要配置呢?
+
+charles可以用了,nice。
+
+现在看到的问题是: 从8080redirect到3000之后,ring-session变掉了.
+
+哦，但是之后ring-session还是不变的.
+
+来看下set-session的过程.
+
+现在怀疑是session的scope的原因: session的东西那不到因为不在一个函数里
+
+现在感觉是redirect没有把session写到服务器端存储.
+
+下一个任务: 把https://github.com/ring-clojure/ring/blob/master/ring-core/src/ring/middleware/session/memory.clj
+看懂.
+
+2016-08-10
+
+现象是有ring-session,但是get-share里prn出来的req里面 :session/key nil
+
+下回好好研究下set-session的过程.
+
+换一个url貌似cookie就变一次.研究下cookie了.
+
+还需要了解下sessionStore到底是怎么存的（是不是每个子url都会开一个sessionStore）
+
+2016-08-11
+
+看了源码,貌似明白了一点,每个def + wrap-session都会新创建一个session-map
+
+根据这儿推断，设计了一个实验,就是receive-code的在第二次访问的时候会带上上一次的session,果不其然.
+
+2016-08-12
+
+昨天找出了session被清空的根源,今天要做的就是receive-code和get-share两个放在同一个sessionStore里面.
+
+做两个set-session的函数,放到一个route里面看看效果.

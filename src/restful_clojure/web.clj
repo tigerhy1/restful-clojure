@@ -143,7 +143,7 @@
                      (assoc-in [:headers "Access-Control-Allow-Origin"] "*")
                      (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,DELETE,OPTIONS"))
           session (:session req)]
-                        
+        (prn req)                
         (prn session)
         (prn "session username  = "  (:username session))
         (prn "res    = " res) 
@@ -216,6 +216,7 @@
     (let [session (:session request)
           nickname (deal-code code)
           session (assoc session :useranme nickname)]
+        (prn "in deal-code-session, session" session)
         session))
 
 (defn receive-code [request]
@@ -223,6 +224,7 @@
          code (:code params)]
         (prn "print sth")
         (prn params)
+        (prn "receive-code, req = " + request)
         (cond (= nil code) nil
             :else (->(redirect "http://114.215.112.211:3000")
                      (assoc :session (deal-code-session request code))
@@ -231,7 +233,6 @@
 
 (def receive-code-handler
     (-> receive-code
-        wrap-session
         (wrap-defaults api-defaults)))
 
 ;prove that session can work
@@ -239,6 +240,7 @@
     (let [session1 (:session req)
           count (:count session1 0)
           session (assoc session1 :count (inc count))]
+          (prn req)
           (prn session)
           (-> (response (str "You accessed this page " count " times."))
               (assoc :session session)
@@ -253,6 +255,14 @@
     (-> get-share
         wrap-session))
 
+(defn one-session-store-fn [req path]
+    (cond (= path "receive-code") receive-code-handler
+          :else (composer get-share)))
+
+(def one-session-store-handler
+    (-> one-session-store-fn
+        wrap-session))
+
 (defroutes routes
   (POST "/" {body :body} (slurp body))
   (GET "/count-up/:to" [to] (str-to (Integer. to)))
@@ -261,12 +271,12 @@
   (POST "/add-share" req ((composer add-share) req))
   (OPTIONS "/add-share" req (options-handler req))
   (POST "/get-share" req ((composer get-share-handler) req))
-  (POST "/get-test" req ((composer get-share-handler) req))
+  (POST "/get-test" req (one-session-store-handler req "get-share"))
   (OPTIONS "/get-test" req (options-handler req))
   (GET "/check-echo" req (check-echo-handler req))
   (GET "/foo/:foo" [foo id]                    ; You can always destructure and use query parameter in the same way
     (str "Foo = " foo " / Id = " id))
-  (GET "/receive-code" req (receive-code-handler req))
+  (GET "/receive-code" req (one-session-store-handler req "receive-code"))
   (GET "/set-session" req (set-session-handler req)))
   
 
