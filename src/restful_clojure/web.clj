@@ -259,13 +259,17 @@
     (-> get-share
         wrap-session))
 
-(defn one-session-store-fn [req path]
+(defn one-session-store-fn [{path :xpath}]
     (cond (= path "receive-code") receive-code-handler
           :else (composer get-share)))
 
 (def one-session-store-handler
     (-> one-session-store-fn
         wrap-session))
+
+;(defn one-session-store-handler [req path]
+;    (let [fun (one-session-store-fn req path)]
+;        (wrap-session fun)))
 
 (defroutes routes
   (POST "/" {body :body} (slurp body))
@@ -275,12 +279,12 @@
   (POST "/add-share" req ((composer add-share) req))
   (OPTIONS "/add-share" req (options-handler req))
   (POST "/get-share" req ((composer get-share-handler) req))
-  (POST "/get-test" req (one-session-store-handler req "get-share"))
+  (POST "/get-test" req (one-session-store-handler (assoc req :xpath "get-share")))
   (OPTIONS "/get-test" req (options-handler req))
   (GET "/check-echo" req (check-echo-handler req))
   (GET "/foo/:foo" [foo id]                    ; You can always destructure and use query parameter in the same way
     (str "Foo = " foo " / Id = " id))
-  (GET "/receive-code" req (one-session-store-handler req "receive-code"))
+  (GET "/receive-code" req (one-session-store-handler (assoc req :xpath "receive-code")))
   (GET "/set-session" req (set-session-handler req)))
   
 
