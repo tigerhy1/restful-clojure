@@ -92,8 +92,9 @@
 
 (defn wrap-cors [res]
     (-> res
-        (assoc-in [:headers "Access-Control-Allow-Origin"] "*")
-        (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,DELETE,OPTIONS")))
+        (assoc-in [:headers "Access-Control-Allow-Origin"] "http://114.215.112.211:3000")
+        (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,DELETE,OPTIONS")
+        (assoc-in [:headers "Access-Control-Allow-Credentials"] "true")))
 
 
 
@@ -114,7 +115,7 @@
     (let [body (:body req)]
         (prn "body" body)
         {:status 200
-        :headers {"Content-Type" "text/html" "Access-Control-Allow-Origin" "*"
+        :headers {"Content-Type" "text/html" "Access-Control-Allow-Origin" "http://114.215.112.211:3000"
              "Access-Control-Allow-Methods" "GET,PUT,POST,DELETE,OPTIONS"}
         :body "Hello"}))
 
@@ -140,8 +141,10 @@
           raw (s/get-share offset size)
           res (response (map fill-content raw))
           result (-> res
-                     (assoc-in [:headers "Access-Control-Allow-Origin"] "*")
-                     (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,DELETE,OPTIONS"))
+                     (assoc-in [:headers "Access-Control-Allow-Origin"] "http://114.215.112.211:3000")
+                     (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,DELETE,OPTIONS")
+                     (assoc-in [:headers "Access-Control-Allow-Credentials"] "true"))
+          
           session (:session req)]
         (prn req)                
         (prn session)
@@ -168,9 +171,10 @@
 (defn options-handler [request]
   (prn "ooo")
   {:status 200
-   :headers {"Content-Type" "application/json" "Access-Control-Allow-Origin" "*"
+   :headers {"Content-Type" "application/json" "Access-Control-Allow-Origin" "http://114.215.112.211:3000"
              "Access-Control-Allow-Methods" "GET,PUT,POST,DELETE,OPTIONS"
-             "Access-Control-Allow-Headers" "Origin, X-Requested-With, Content-Type, Accept"}
+             "Access-Control-Allow-Headers" "Origin, X-Requested-With, Content-Type, Accept"
+             "Access-Control-Allow-Credentials" "true"}
    :body "hi"})
 
 (defn check-echo [request]

@@ -231,3 +231,5 @@ charles可以用了,nice。
 昨天找出了session被清空的根源,今天要做的就是receive-code和get-share两个放在同一个sessionStore里面.
 
 做两个set-session的函数,放到一个route里面看看效果.
+
+对了，还有需要把网址做成配置的，这样就不用换代码了，然后本机远程都能跑.
