@@ -219,7 +219,7 @@
 (defn deal-code-session [request code]
     (let [session (:session request)
           nickname (deal-code code)
-          session (assoc session :useranme nickname)]
+          session (assoc session :username nickname)]
         (prn "in deal-code-session, session" session)
         session))
 
