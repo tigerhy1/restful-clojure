@@ -243,7 +243,10 @@
 (defn set-session [req]
     (let [session1 (:session req)
           count (:count session1 0)
-          session (assoc session1 :count (inc count))]
+          uri (:uri req)
+          inc-cnt (if (= uri "/set-session-2") 2 1)
+          session (assoc session1 :count (+ inc-cnt count))]
+          (prn "uri = "  uri)
           (prn req)
           (prn session)
           (-> (response (str "You accessed this page " count " times."))
@@ -259,11 +262,12 @@
     (-> get-share
         wrap-session))
 
-(defn one-session-store-fn [{path :xpath}]
-    (cond (= path "receive-code") receive-code-handler
-          :else (composer get-share)))
+(defn one-session-store-fn [req]
+    (let [uri (:uri req)]
+        (cond (= uri "/receive-code") (receive-code-handler req)
+          :else ((composer get-share) req))))
 
-(def one-session-store-handler
+(def one-session-store-composer 
     (-> one-session-store-fn
         wrap-session))
 
@@ -279,13 +283,14 @@
   (POST "/add-share" req ((composer add-share) req))
   (OPTIONS "/add-share" req (options-handler req))
   (POST "/get-share" req ((composer get-share-handler) req))
-  (POST "/get-test" req (one-session-store-handler (assoc req :xpath "get-share")))
+  (POST "/get-test" req (one-session-store-composer req))
   (OPTIONS "/get-test" req (options-handler req))
   (GET "/check-echo" req (check-echo-handler req))
   (GET "/foo/:foo" [foo id]                    ; You can always destructure and use query parameter in the same way
     (str "Foo = " foo " / Id = " id))
-  (GET "/receive-code" req (one-session-store-handler (assoc req :xpath "receive-code")))
-  (GET "/set-session" req (set-session-handler req)))
+  (GET "/receive-code" req (one-session-store-composer req))
+  (GET "/set-session" req (set-session-handler req))
+  (GET "/set-session-2" req (set-session-handler req)))
   
 
 (defn -main []
