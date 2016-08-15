@@ -250,10 +250,12 @@ charles可以用了,nice。
 
 1. 加一个key-series, 可以通过unionId找到userId(内部的)
 
-2. receive-code的时候, 从微信平台哪里拿到了unionId之后，把userId放到sessiono里面,如果不存在这个unionId的话，
+2. receive-code的时候, 从微信平台哪里拿到了unionId之后，把userId放到session里面,如果不存在这个unionId的话，
    需要add user一下.
    
-   
+2016-08-15
+
+先花一定的时间把weixin login的东西拎出来.
 
 
 
