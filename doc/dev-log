@@ -257,7 +257,9 @@ charles可以用了,nice。
 
 先花一定的时间把weixin login的东西拎出来.
 
+get-add-user原来有现成的,嘿嘿.
 
+还有一个困惑, 有时候连接couchbase会出现两次.
 
 
 

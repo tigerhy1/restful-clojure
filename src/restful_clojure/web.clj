@@ -14,7 +14,7 @@
             [restful_clojure.couchbase :as c]
             [restful_clojure.movie :as m]
             [restful_clojure.share :as s]
-            [restful_clojure.login :refer [receive-code]]
+            [restful_clojure.login :refer [receive-code, get-add-user-db]]
             )
             
   (:import [com.couchbase.client.java Cluster CouchbaseCluster]))
@@ -34,45 +34,6 @@
     (c/get-doc bucket "hello"))
     ;(prn "test-cb"))
 
-(defn get-uid
-    [unionId]
-    (let [k (str "unionid2uid" "_" unionId)
-          doc (c/get-doc bucket k)
-          content (:content doc)]
-      (prn (str "in get-uid " content))
-      (if (nil? content) 0 (get content "uid"))
-    ))
-
-(defn create-user
-    [openId unionId weixinName]
-    (let [k "max_uid"
-          uid (c/counter! bucket k)]
-        (prn k)
-        (prn uid)
-          {:uid uid
-          :openId openId
-          :unionId unionId
-          :weixinName weixinName
-          }
-        ))
-
-(defn add-user
-    [openId unionId weixinName]
-    (let [user (create-user openId unionId weixinName)
-          uid (:uid user)
-          k (str "user_" uid)
-          k2 (str "unionid2uid_" unionId)]
-        (c/replace! bucket k2 {:uid uid})
-        (c/replace! bucket k user)))
-
-(defn get-add-user-db 
-    [openId unionId weixinName]
-    (let [uid (get-uid unionId)]
-    ;(prn "in get-add-user-db")
-    ;add-user add () around, then mean apply the function, 
-    ;otherwise just function object.
-    (cond (= 0 uid) (add-user openId unionId weixinName)
-          :else uid)))
 
 (defn get-add-user [req]
     (let [body (:body req)
