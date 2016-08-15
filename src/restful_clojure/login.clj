@@ -34,7 +34,8 @@
           k (str "user_" uid)
           k2 (str "unionid2uid_" unionId)]
         (c/replace! bucket k2 {:uid uid})
-        (c/replace! bucket k user)))
+        (c/replace! bucket k user)
+        uid))
 
 (defn get-add-user-db 
     [openId unionId weixinName]

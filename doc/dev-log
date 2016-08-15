@@ -261,5 +261,5 @@ get-add-user原来有现成的,嘿嘿.
 
 还有一个困惑, 有时候连接couchbase会出现两次.
 
-
+现在的问题是session里的userid里存的是couchbase里get出来的result
 
