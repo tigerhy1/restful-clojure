@@ -261,5 +261,37 @@ get-add-user原来有现成的,嘿嘿.
 
 还有一个困惑, 有时候连接couchbase会出现两次.
 
-现在的问题是session里的userid里存的是couchbase里get出来的result
+现在的问题是session里的userid里存的是couchbase里get出来的result.
+
+登陆这块弄完了，不错。
+
+现在需要优化一下页面的逻辑:
+
+1. 分页, 想做成动态加载的方式.
+
+2. tab页
+
+想的清楚了一些： tab: 发现，分享，我的
+
+2016-08-16
+
+看了“京东联盟”,针对一本书做链接购买的方式应该是没问题的.
+
+还可以看亚马逊联盟, 51返利网.
+
+回到技术方面,今天计划开始做下拉分页.
+
+现在的计划是参考下面这个网址,自己做一个滚动的,好处是可以自己多一些控制,了解原理.
+http://qiita.com/kimagure/items/57cdd08bdf56cc51d294
+
+2016-08-19
+
+为了实现dynamic load，这边也要改一下:
+
+get-share offset size
+
+   if offset = 0:
+     fetch 最新的+size
+   else:
+     fetch (offset-size+1 ~ offset)
 

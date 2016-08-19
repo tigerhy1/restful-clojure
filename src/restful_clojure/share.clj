@@ -20,7 +20,7 @@
         ret))
     ([offset size]
     (let [lastIdx (c/counter bucket "max_sid")
-          sIdx (- lastIdx offset)
+          sIdx (if (= offset 0) lastIdx offset)
           eIdx (max 0 (- sIdx size))
           r (range sIdx eIdx -1)]
         (prn (str "sIdx " sIdx " eIdx " eIdx))
