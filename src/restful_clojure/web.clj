@@ -190,7 +190,7 @@
 
 (defn one-session-store-fn [req fun]
     (let [uri (:uri req)]
-        (cond (= uri "/receive-code") (receive-code-handler req)
+        (cond (= uri "/receive-code") (fun req)
           :else ((composer fun) req))))
 
 (def one-session-store-composer 
@@ -214,7 +214,7 @@
   (GET "/check-echo" req (check-echo-handler req))
   (GET "/foo/:foo" [foo id]                    ; You can always destructure and use query parameter in the same way
     (str "Foo = " foo " / Id = " id))
-  (GET "/receive-code" req (one-session-store-composer req))
+  (GET "/receive-code" req (one-session-store-composer req receive-code-handler))
   (GET "/set-session" req (set-session-handler req))
   (GET "/set-session-2" req (set-session-handler req)))
   
