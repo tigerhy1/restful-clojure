@@ -83,7 +83,9 @@
 
 (defn add-share [req]
     (let [body (:body req)
-          uid (:uid body)
+          session (:session req)
+          userid (:userid session)
+          uid (if (= nil userid) (:uid body) userid)
           movieName (:movie_name body)
           desc (:share_comment body)
           mid (m/get-add-movie movieName)
@@ -110,7 +112,7 @@
           session (:session req)]
         (prn req)                
         (prn session)
-        (prn "session username  = "  (:username session))
+        (prn "session userid  = "  (:userid session))
         (prn "res    = " res) 
         (prn "reslut = " result)
         result))
@@ -179,14 +181,17 @@
     (-> set-session
         wrap-session))
 
-(def get-share-handler
-    (-> get-share
-        wrap-session))
+;(def get-share-handler
+;    (-> get-share
+;        wrap-session))
 
-(defn one-session-store-fn [req]
+
+
+
+(defn one-session-store-fn [req fun]
     (let [uri (:uri req)]
         (cond (= uri "/receive-code") (receive-code-handler req)
-          :else ((composer get-share) req))))
+          :else ((composer fun) req))))
 
 (def one-session-store-composer 
     (-> one-session-store-fn
@@ -201,10 +206,10 @@
   (GET "/count-up/:to" [to] (str-to (Integer. to)))
   (GET "/count-down/:from" [from] (str-from (Integer. from)))
   (POST "/get-add-user" req ((composer get-add-user) req))
-  (POST "/add-share" req ((composer add-share) req))
+  (POST "/add-share" req (one-session-store-composer req add-share))
   (OPTIONS "/add-share" req (options-handler req))
-  (POST "/get-share" req ((composer get-share-handler) req))
-  (POST "/get-test" req (one-session-store-composer req))
+  ;(POST "/get-share" req ((composer get-share-handler) req))
+  (POST "/get-test" req (one-session-store-composer req get-share))
   (OPTIONS "/get-test" req (options-handler req))
   (GET "/check-echo" req (check-echo-handler req))
   (GET "/foo/:foo" [foo id]                    ; You can always destructure and use query parameter in the same way
