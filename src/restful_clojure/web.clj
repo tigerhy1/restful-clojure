@@ -195,7 +195,7 @@
 
 (def one-session-store-composer 
     (fn [req fun]
-        (wrap-session (one-session-store-fn [req fun]))))
+        (wrap-session (one-session-store-fn req fun))))
 
 ;(defn one-session-store-handler [req path]
 ;    (let [fun (one-session-store-fn req path)]
