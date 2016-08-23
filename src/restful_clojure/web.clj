@@ -185,17 +185,16 @@
 ;    (-> get-share
 ;        wrap-session))
 
-
-
-
-(defn one-session-store-fn [req fun]
+(defn one-session-store-fn [req]
     (let [uri (:uri req)]
-        (cond (= uri "/receive-code") (fun req)
-          :else ((composer fun) req))))
+        (cond (= uri "/receive-code") (receive-code-handler req)
+              (= uri "/get-test") ((composer get-share) req)
+              (= uri "/add-share") ((composer add-share) req)
+              :else ((composer get-share) req))))
 
 (def one-session-store-composer 
-    (fn [req fun]
-        ((wrap-session one-session-store-fn) req fun)))
+    (fn [req]
+        ((wrap-session one-session-store-fn) req)))
 
 ;(defn one-session-store-handler [req path]
 ;    (let [fun (one-session-store-fn req path)]
@@ -206,15 +205,15 @@
   (GET "/count-up/:to" [to] (str-to (Integer. to)))
   (GET "/count-down/:from" [from] (str-from (Integer. from)))
   (POST "/get-add-user" req ((composer get-add-user) req))
-  (POST "/add-share" req (one-session-store-composer req add-share))
+  (POST "/add-share" req (one-session-store-composer req ))
   (OPTIONS "/add-share" req (options-handler req))
   ;(POST "/get-share" req ((composer get-share-handler) req))
-  (POST "/get-test" req (one-session-store-composer req get-share))
+  (POST "/get-test" req (one-session-store-composer req ))
   (OPTIONS "/get-test" req (options-handler req))
   (GET "/check-echo" req (check-echo-handler req))
   (GET "/foo/:foo" [foo id]                    ; You can always destructure and use query parameter in the same way
     (str "Foo = " foo " / Id = " id))
-  (GET "/receive-code" req (one-session-store-composer req receive-code-handler))
+  (GET "/receive-code" req (one-session-store-composer req ))
   (GET "/set-session" req (set-session-handler req))
   (GET "/set-session-2" req (set-session-handler req)))
   
