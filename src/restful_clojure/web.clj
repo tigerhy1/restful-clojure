@@ -192,9 +192,12 @@
               (= uri "/add-share") ((composer add-share) req)
               :else ((composer get-share) req))))
 
+(def wrap-session-fn
+    (wrap-session one-session-store-fn))
+
 (def one-session-store-composer 
     (fn [req]
-        ((wrap-session one-session-store-fn) req)))
+        (wrap-session-fn req)))
 
 ;(defn one-session-store-handler [req path]
 ;    (let [fun (one-session-store-fn req path)]
