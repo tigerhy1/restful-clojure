@@ -63,14 +63,6 @@
          :movie_name movie_name
          :share_comment desc}))
 
-;(defn get-share-test [req]
-;    (let [body (:body req)]
-;        (prn "body" body)
-;        {:status 200
-;        :headers {"Content-Type" "text/html" "Access-Control-Allow-Origin" "http://114.215.112.211:3000"
-;             "Access-Control-Allow-Methods" "GET,PUT,POST,DELETE,OPTIONS"}
-;        :body "Hello"}))
-
 (defn add-share [req]
     (let [body (:body req)
           session (:session req)
@@ -95,9 +87,7 @@
           raw (s/get-share offset size)
           res (response (map fill-content raw))
           result (-> res
-                     (assoc-in [:headers "Access-Control-Allow-Origin"] "http://114.215.112.211:3000")
-                     (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,DELETE,OPTIONS")
-                     (assoc-in [:headers "Access-Control-Allow-Credentials"] "true"))
+                     wrap-cors)
           
           session (:session req)]
         (prn req)                
@@ -124,12 +114,10 @@
 
 (defn options-handler [request]
   (prn "ooo")
-  {:status 200
-   :headers {"Content-Type" "application/json" "Access-Control-Allow-Origin" "http://114.215.112.211:3000"
-             "Access-Control-Allow-Methods" "GET,PUT,POST,DELETE,OPTIONS"
-             "Access-Control-Allow-Headers" "Origin, X-Requested-With, Content-Type, Accept"
-             "Access-Control-Allow-Credentials" "true"}
-   :body "hi"})
+  (-> {:status 200
+       :headers {"Access-Control-Allow-Headers" "Origin, X-Requested-With, Content-Type, Accept"}
+       :body "hi"}
+      wrap-cors))
 
 (defn check-echo [request]
     (prn request)
