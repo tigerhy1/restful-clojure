@@ -309,5 +309,81 @@ add-share合并session也是一个有些难度的事情,要好好整理下代码
 
 知道问题所在了.
 
+注意elm客户端那边也要做相应的改动.
+
+嘿嘿,add-share搞定.
+
+2016-08-31
+
+需要加like的功能,现在先总结原有的key:
+
+Group 1: 电影
+
+i_m_{电影名称}   {mid : 电影id}
+
+m_{mid}         {name : 电影名称, mid : 电影id}
+
+max_mid: 最大mid
+
+
+Group 2: 分享
+
+share_{shareId}   { uid, mid, desc : 描述, liked}
+
+max_sid: 最大shareId
+
+
+Group 3: 用户
+
+user_{uid}  {uid, unionId, openId, weixinName}
+
+max_uid: 最大uid
+
+
+Group 4: like
+
+for like list:
+
+like_{uid}_cnt
+
+like_{uid}_{cnt} {shareId, time}
+
+为了看某条是否被某人like:
+
+i_like_{shareId}_{uid}
+
+
+Group 5: Comments
+
+这个需要再想想,看是不是和share做到一起.
+
+毕竟格式什么的会不一样，还是不要做到一起了.
+
+2016-09-01
+
+喜欢，和转发都是需要的额.
+
+转发倒是好做，不涉及到数据结构的改变.
+
+涉及到一个问题dislike做不做呢?
+
+今天任务:
+
+1. share添加的时间需要录入
+
+2. share的like功能 
+
+  2.1 share的value里加入like_cnt
+
+  2.2 
+  
+
+看到两个需要优化的问题: 
+
+1. CORS的那个地方要做成可配置的，不然在本机不能调试，很不方便
+
+2. couchbase连接的那个地方可以怎么样才能在编译的时候不用连接?
+  
+
 
 

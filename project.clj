@@ -13,7 +13,8 @@
                  [ring-cors "0.1.8"]
                  [compojure "1.5.1"]
                  [clj-http "2.2.0"]
-                 [com.couchbase.client/java-client "2.2.4"]]
+                 [com.couchbase.client/java-client "2.2.4"]
+                 [clj-time "0.12.0"]]
   :main restful_clojure.web
   :aot [restful_clojure.web]
   )

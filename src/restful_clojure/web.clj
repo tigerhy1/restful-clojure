@@ -19,16 +19,6 @@
             
   (:import [com.couchbase.client.java Cluster CouchbaseCluster]))
 
-(defn- str-to [num]
-  (apply str (interpose ", " (range 1 (inc num)))))
-
-(defn- str-from [num]
-  (apply str (interpose ", " (reverse (range 1 (inc num))))))
-
-;Cluster cluster = CouchbaseCluster.create();
-
-(def responseString "Hello World2")
-
 
 (def test-cb 
     (c/get-doc bucket "hello"))
@@ -73,13 +63,13 @@
          :movie_name movie_name
          :share_comment desc}))
 
-(defn get-share-test [req]
-    (let [body (:body req)]
-        (prn "body" body)
-        {:status 200
-        :headers {"Content-Type" "text/html" "Access-Control-Allow-Origin" "http://114.215.112.211:3000"
-             "Access-Control-Allow-Methods" "GET,PUT,POST,DELETE,OPTIONS"}
-        :body "Hello"}))
+;(defn get-share-test [req]
+;    (let [body (:body req)]
+;        (prn "body" body)
+;        {:status 200
+;        :headers {"Content-Type" "text/html" "Access-Control-Allow-Origin" "http://114.215.112.211:3000"
+;             "Access-Control-Allow-Methods" "GET,PUT,POST,DELETE,OPTIONS"}
+;        :body "Hello"}))
 
 (defn add-share [req]
     (let [body (:body req)
@@ -123,14 +113,14 @@
         (wrap-json-body {:keywords? true :bigdecimals? true})
         wrap-json-response))
 
-(defn get-test
-    [req]
-    (let [a {:uid 1 :name "hu"}
-          b {:uid 2 :name "yuan"}
-          l (list a b)]
-        (prn l)
-        (response l))
-    )
+;(defn get-test
+;    [req]
+;    (let [a {:uid 1 :name "hu"}
+;          b {:uid 2 :name "yuan"}
+;          l (list a b)]
+;        (prn l)
+;        (response l))
+;    )
 
 (defn options-handler [request]
   (prn "ooo")
@@ -181,10 +171,6 @@
     (-> set-session
         wrap-session))
 
-;(def get-share-handler
-;    (-> get-share
-;        wrap-session))
-
 (defn one-session-store-fn [req]
     (let [uri (:uri req)]
         (cond (= uri "/receive-code") (receive-code-handler req)
@@ -199,14 +185,8 @@
     (fn [req]
         (wrap-session-fn req)))
 
-;(defn one-session-store-handler [req path]
-;    (let [fun (one-session-store-fn req path)]
-;        (wrap-session fun)))
-
 (defroutes routes
   (POST "/" {body :body} (slurp body))
-  (GET "/count-up/:to" [to] (str-to (Integer. to)))
-  (GET "/count-down/:from" [from] (str-from (Integer. from)))
   (POST "/get-add-user" req ((composer get-add-user) req))
   (POST "/add-share" req (one-session-store-composer req ))
   (OPTIONS "/add-share" req (options-handler req))
@@ -214,8 +194,6 @@
   (POST "/get-test" req (one-session-store-composer req ))
   (OPTIONS "/get-test" req (options-handler req))
   (GET "/check-echo" req (check-echo-handler req))
-  (GET "/foo/:foo" [foo id]                    ; You can always destructure and use query parameter in the same way
-    (str "Foo = " foo " / Id = " id))
   (GET "/receive-code" req (one-session-store-composer req ))
   (GET "/set-session" req (set-session-handler req))
   (GET "/set-session-2" req (set-session-handler req)))
