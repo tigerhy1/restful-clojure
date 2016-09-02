@@ -3,7 +3,8 @@
               [clj-http.client :as client]
               [ring.util.response :refer [redirect]]
               [restful_clojure.couchbase_con :refer [bucket]]
-              [restful_clojure.couchbase :as c]))
+              [restful_clojure.couchbase :as c]
+              [restful_clojure.conf :refer [front-server-address]]))
 
 (defn get-uid
     [unionId]
@@ -81,7 +82,7 @@
         (prn params)
         (prn "receive-code, req = " + request)
         (cond (= nil code) nil
-            :else (->(redirect "http://114.215.112.211:3000")
+            :else (->(redirect front-server-address)
                      (assoc :session (deal-code-session request code))
                      (assoc-in [:headers "Access-Control-Allow-Credentials"] "true"))))
     )

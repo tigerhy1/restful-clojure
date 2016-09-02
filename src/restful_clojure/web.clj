@@ -15,6 +15,8 @@
             [restful_clojure.movie :as m]
             [restful_clojure.share :as s]
             [restful_clojure.login :refer [receive-code, get-add-user-db]]
+            [restful_clojure.login :refer [receive-code, get-add-user-db]]
+            [restful_clojure.conf :refer [front-server-address]]
             )
             
   (:import [com.couchbase.client.java Cluster CouchbaseCluster]))
@@ -44,7 +46,7 @@
 
 (defn wrap-cors [res]
     (-> res
-        (assoc-in [:headers "Access-Control-Allow-Origin"] "http://114.215.112.211:3000")
+        (assoc-in [:headers "Access-Control-Allow-Origin" ] front-server-address)
         (assoc-in [:headers "Access-Control-Allow-Methods"] "GET,PUT,POST,DELETE,OPTIONS")
         (assoc-in [:headers "Access-Control-Allow-Credentials"] "true")))
 
