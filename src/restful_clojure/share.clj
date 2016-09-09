@@ -1,13 +1,15 @@
 (ns restful_clojure.share
     (:require [restful_clojure.couchbase_con :refer [bucket]]
               [restful_clojure.couchbase :as c]
-              [restful_clojure.movie :as m]))
+              [restful_clojure.movie :as m]
+              [restful_clojure.time :as t]))
 
 (defn create-share
     [uid mid desc]
     {:uid uid
      :mid mid
-     :desc desc})
+     :desc desc
+     :time t/now})
 
 ;TODO aynchroized API
 (defn get-share
@@ -32,6 +34,7 @@
     [uid, mid, desc]
     (let [shareId (c/counter! bucket "max_sid")
           k (str "share_" shareId)]
+        (prn t/now)
         (c/replace! bucket k (create-share uid mid desc))
         (get-share shareId)))
 

@@ -58,12 +58,15 @@
           uid (get item "uid")
           mid (get item "mid")
           desc (get item "desc")
+          ti (get item "time")
+          tii (if (= nil ti) "2010-10-01 12:00:00" ti)
           user_name (get-user-name uid)
           movie_name (m/get-movie-name mid)]
         {:id sid
          :user_name user_name
          :movie_name movie_name
-         :share_comment desc}))
+         :share_comment desc
+         :created_at tii}))
 
 (defn add-share [req]
     (let [body (:body req)
